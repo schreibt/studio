@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Components Demo</title>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    
+    <style>
+        @layer base {
+            body {
+                @apply bg-gray-50 text-gray-900 font-sans;
+            }
+        }
+        
+        @layer components {
+            .btn {
+                @apply px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+            }
+            
+            .btn-primary {
+                @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+            }
+            
+            .btn-outline {
+                @apply border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-blue-500;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        // Simple InputField component for demo
+        function InputField({
+            value = '',
+            onChange,
+            label,
+            placeholder,
+            helperText,
+            errorMessage,
+            disabled = false,
+            invalid = false,
+            variant = 'outlined',
+            size = 'md',
+            showClearButton = false,
+            type = 'text'
+        }) {
+            const [internalValue, setInternalValue] = React.useState(value);
+            const [showPassword, setShowPassword] = React.useState(false);
+
+            React.useEffect(() => {
+                setInternalValue(value);
+            }, [value]);
+
+            const handleChange = (e) => {
+                const newValue = e.target.value;
+                setInternalValue(newValue);
+                if (onChange) {
+                    onChange(e);
+                }
+            };
+
+            const handleClear = () => {
+                const syntheticEvent = {
+                    target: { value: '' },
+                    currentTarget: { value: '' }
+                };
+                setInternalValue('');
+                if (onChange) {
+                    onChange(syntheticEvent);
+                }
+            };
+
+            const getSizeClasses = () => {
+                switch (size) {
+                    case 'sm':
+                        return 'px-2 py-1 text-sm';
+                    case 'lg':
+                        return 'px-4 py-3 text-lg';
+                    default:
+                        return 'px-3 py-2 text-base';
+                }
+            };
+
+            const getVariantClasses = () => {
+                const baseClasses = 'w-full rounded-lg transition-all duration-200 focus:outline-none focus:ring-2';
+                
+                if (disabled) {
+                    return `${baseClasses} bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200`;
+                }
+
+                if (invalid || errorMessage) {
+                    switch (variant) {
+                        case 'filled':
+                            return `${baseClasses} bg-red-50 border border-red-300 focus:ring-red-500 focus:border-red-500`;
+                        case 'ghost':
+                            return `${baseClasses} bg-transparent border-0 border-b-2 border-red-300 rounded-none focus:ring-0 focus:border-red-500`;
+                        default:
+                            return `${baseClasses} bg-white border border-red-300 focus:ring-red-500 focus:border-red-500`;
+                    }
+                }
+
+                switch (variant) {
+                    case 'filled':
+                        return `${baseClasses} bg-gray-100 border border-gray-200 focus:ring-blue-500 focus:border-blue-500 focus:bg-white`;
+                    case 'ghost':
+                        return `${baseClasses} bg-transparent border-0 border-b-2 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500`;
+                    default:
+                        return `${baseClasses} bg-white border border-gray-300 focus:ring-blue-500 focus:border-blue-500`;
+                }
+            };
+
+            const inputType = type === 'password' && showPassword ? 'text' : type;
+
+            return (
+                <div className="relative">
+                    {label && (
+                        <label className={`block text-sm font-medium mb-1 ${invalid || errorMessage ? 'text-red-600' : 'text-gray-700'}`}>
+                            {label}
+                        </label>
+                    )}
+                    
+                    <div className="relative">
+                        <input
+                            type={inputType}
+                            value={internalValue}
+                            onChange={handleChange}
+                            placeholder={placeholder}
+                            disabled={disabled}
+                            className={`${getVariantClasses()} ${getSizeClasses()}`}
+                            aria-invalid={invalid || !!errorMessage}
+                        />
+                        
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                            {type === 'password' && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                    tabIndex={-1}
+                                >
+                                    <div className={`icon-${showPassword ? 'eye-off' : 'eye'} text-sm`}></div>
+                                </button>
+                            )}
+                            
+                            {showClearButton && internalValue && !disabled && (
+                                <button
+                                    type="button"
+                                    onClick={handleClear}
+                                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                    tabIndex={-1}
+                                >
+                                    <div className="icon-x text-sm"></div>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {(helperText || errorMessage) && (
+                        <p className={`mt-1 text-sm ${errorMessage ? 'text-red-600' : 'text-gray-500'}`}>
+                            {errorMessage || helperText}
+                        </p>
+                    )}
+                </div>
+            );
+        }
+
+        // Simple DataTable component for demo
+        function DataTable({
+            data = [],
+            columns = [],
+            loading = false,
+            selectable = false,
+            onRowSelect
+        }) {
+            const [selectedRows, setSelectedRows] = React.useState([]);
+            const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'asc' });
+
+            const handleSort = (columnKey) => {
+                const column = columns.find(col => col.key === columnKey);
+                if (!column?.sortable) return;
+
+                let direction = 'asc';
+                if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
+                    direction = 'desc';
+                }
+                setSortConfig({ key: columnKey, direction });
+            };
+
+            const sortedData = React.useMemo(() => {
+                if (!sortConfig.key) return data;
+
+                return [...data].sort((a, b) => {
+                    const column = columns.find(col => col.key === sortConfig.key);
+                    const aValue = a[column.dataIndex];
+                    const bValue = b[column.dataIndex];
+
+                    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }, [data, sortConfig, columns]);
+
+            const handleRowSelect = (row, isSelected) => {
+                let newSelectedRows;
+                if (isSelected) {
+                    newSelectedRows = [...selectedRows, row];
+                } else {
+                    newSelectedRows = selectedRows.filter(selectedRow => selectedRow !== row);
+                }
+                setSelectedRows(newSelectedRows);
+                if (onRowSelect) {
+                    onRowSelect(newSelectedRows);
+                }
+            };
+
+            const handleSelectAll = (isSelected) => {
+                const newSelectedRows = isSelected ? [...sortedData] : [];
+                setSelectedRows(newSelectedRows);
+                if (onRowSelect) {
+                    onRowSelect(newSelectedRows);
+                }
+            };
+
+            const isRowSelected = (row) => selectedRows.includes(row);
+            const isAllSelected = sortedData.length > 0 && selectedRows.length === sortedData.length;
+
+            if (loading) {
+                return (
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div className="flex items-center justify-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span className="ml-3 text-gray-600">Loading...</span>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (data.length === 0) {
+                return (
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                            <div className="icon-inbox text-4xl mb-4"></div>
+                            <p className="text-lg font-medium mb-2">No data available</p>
+                            <p className="text-sm">There are no records to display</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    {selectable && (
+                                        <th className="px-4 py-3 text-left w-12">
+                                            <input
+                                                type="checkbox"
+                                                checked={isAllSelected}
+                                                onChange={(e) => handleSelectAll(e.target.checked)}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                        </th>
+                                    )}
+                                    {columns.map((column) => (
+                                        <th
+                                            key={column.key}
+                                            className={`px-4 py-3 text-left font-semibold text-gray-900 ${column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                                            onClick={() => handleSort(column.key)}
+                                        >
+                                            <div className="flex items-center space-x-2">
+                                                <span>{column.title}</span>
+                                                {column.sortable && (
+                                                    <div className="flex flex-col">
+                                                        <div 
+                                                            className={`icon-chevron-up text-xs ${
+                                                                sortConfig.key === column.key && sortConfig.direction === 'asc' 
+                                                                    ? 'text-blue-600' : 'text-gray-400'
+                                                            }`}
+                                                        ></div>
+                                                        <div 
+                                                            className={`icon-chevron-down text-xs ${
+                                                                sortConfig.key === column.key && sortConfig.direction === 'desc' 
+                                                                    ? 'text-blue-600' : 'text-gray-400'
+                                                            }`}
+                                                        ></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {sortedData.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+                                            isRowSelected(row) ? 'bg-blue-50' : ''
+                                        }`}
+                                    >
+                                        {selectable && (
+                                            <td className="px-4 py-3">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isRowSelected(row)}
+                                                    onChange={(e) => handleRowSelect(row, e.target.checked)}
+                                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                />
+                                            </td>
+                                        )}
+                                        {columns.map((column) => (
+                                            <td key={column.key} className="px-4 py-3 text-gray-700">
+                                                {row[column.dataIndex]}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+        // Demo App
+        function DemoApp() {
+            const [inputValue, setInputValue] = React.useState('');
+            const [passwordValue, setPasswordValue] = React.useState('');
+            const [selectedRows, setSelectedRows] = React.useState([]);
+            const [isLoading, setIsLoading] = React.useState(false);
+
+            const sampleData = [
+                { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Developer', status: 'Active' },
+                { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Designer', status: 'Active' },
+                { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Manager', status: 'Inactive' },
+                { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Developer', status: 'Active' },
+                { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'Analyst', status: 'Active' }
+            ];
+
+            const columns = [
+                { key: 'id', title: 'ID', dataIndex: 'id', sortable: true },
+                { key: 'name', title: 'Name', dataIndex: 'name', sortable: true },
+                { key: 'email', title: 'Email', dataIndex: 'email', sortable: true },
+                { key: 'role', title: 'Role', dataIndex: 'role', sortable: true },
+                { key: 'status', title: 'Status', dataIndex: 'status', sortable: true }
+            ];
+
+            const handleLoadingDemo = () => {
+                setIsLoading(true);
+                setTimeout(() => setIsLoading(false), 3000);
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50 py-8">
+                    <div className="max-w-6xl mx-auto px-4">
+                        <header className="text-center mb-12">
+                            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                                React Components Assignment
+                            </h1>
+                            <p className="text-lg text-gray-600 mb-6">
+                                InputField & DataTable Components Demo
+                            </p>
+                            <div className="flex justify-center space-x-4">
+                                <a 
+                                    href="https://github.com/your-repo/react-components-assignment" 
+                                    className="btn btn-outline"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    GitHub Repository
+                                </a>
+                            </div>
+                        </header>
+                        
+                        <div className="space-y-12">
+                            {/* InputField Demo */}
+                            <section className="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">InputField Component</h2>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Basic Input</h3>
+                                        <InputField
+                                            label="Full Name"
+                                            placeholder="Enter your full name"
+                                            value={inputValue}
+                                            onChange={(e) => setInputValue(e.target.value)}
+                                            helperText="This is helper text"
+                                            showClearButton={true}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Password Input</h3>
+                                        <InputField
+                                            type="password"
+                                            label="Password"
+                                            placeholder="Enter your password"
+                                            value={passwordValue}
+                                            onChange={(e) => setPasswordValue(e.target.value)}
+                                            helperText="Password must be at least 8 characters"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Error State</h3>
+                                        <InputField
+                                            label="Email"
+                                            placeholder="Enter your email"
+                                            value="invalid-email"
+                                            invalid={true}
+                                            errorMessage="Please enter a valid email address"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Filled Variant</h3>
+                                        <InputField
+                                            variant="filled"
+                                            label="Search"
+                                            placeholder="Search..."
+                                            showClearButton={true}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Ghost Variant</h3>
+                                        <InputField
+                                            variant="ghost"
+                                            label="Username"
+                                            placeholder="Enter username"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Sizes</h3>
+                                        <div className="space-y-3">
+                                            <InputField size="sm" placeholder="Small input" />
+                                            <InputField size="md" placeholder="Medium input" />
+                                            <InputField size="lg" placeholder="Large input" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-4">Disabled State</h3>
+                                        <InputField
+                                            label="Disabled Input"
+                                            placeholder="This is disabled"
+                                            value="Cannot edit this"
+                                            disabled={true}
+                                        />
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* DataTable Demo */}
+                            <section className="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-900">DataTable Component</h2>
+                                    <button
+                                        onClick={handleLoadingDemo}
+                                        className="btn btn-primary"
+                                    >
+                                        Demo Loading State
+                                    </button>
+                                </div>
+
+                                {selectedRows.length > 0 && (
+                                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p className="text-sm text-blue-800">
+                                            Selected {selectedRows.length} row(s): {selectedRows.map(row => row.name).join(', ')}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <DataTable
+                                    data={sampleData}
+                                    columns={columns}
+                                    loading={isLoading}
+                                    selectable={true}
+                                    onRowSelect={setSelectedRows}
+                                />
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<DemoApp />);
+    </script>
+</body>
+</html>
+
+
