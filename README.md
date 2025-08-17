@@ -239,25 +239,25 @@ interface Column<T> {
 }
 ```
 
-## 🎨 Design System
+## 📁 Project Structure
 
-The components use a consistent design system built with TailwindCSS:
-
-### Colors
-- **Primary**: Blue (`#3b82f6`)
-- **Success**: Green (`#10b981`)
-- **Error**: Red (`#ef4444`)
-- **Warning**: Yellow (`#f59e0b`)
-- **Gray Scale**: 50-900 range
-
-### Spacing
-- **Small**: `px-2 py-1`
-- **Medium**: `px-3 py-2`
-- **Large**: `px-4 py-3`
-
-### Border Radius
-- **Default**: `rounded-lg`
-- **Ghost variant**: `rounded-none`
+```
+src/
+├── components/
+│   ├── InputField.tsx
+│   ├── InputField.stories.tsx
+│   ├── DataTable.tsx
+│   ├── DataTable.stories.tsx
+│   └── __tests__/
+│       ├── InputField.test.tsx
+│       └── DataTable.test.tsx
+├── test/
+│   └── setup.ts
+├── App.tsx
+├── main.tsx
+├── index.css
+└── index.ts
+```
 
 ## 🧪 Testing
 
