@@ -33,6 +33,73 @@ A modern React component library built with TypeScript, TailwindCSS, and Storybo
 - **Vite** - Modern build tool
 - **Lucide React** - Beautiful icons
 
+## 🎯 Approach & Solution Design
+
+### Project Architecture & Design Decisions
+
+#### 1. **Component Design Philosophy**
+- **Composition over Configuration**: Both components are designed to be highly composable and flexible
+- **TypeScript-First**: All components are built with strict TypeScript typing for better developer experience
+- **Accessibility by Default**: ARIA labels, keyboard navigation, and semantic HTML are built-in
+- **Responsive Design**: Mobile-first approach with TailwindCSS utility classes
+
+#### 2. **InputField Component Strategy**
+- **State Management**: Internal state management with controlled/uncontrolled input support
+- **Variant System**: Three visual variants (filled, outlined, ghost) for different use cases
+- **Size System**: Consistent sizing (sm, md, lg) with proper spacing and typography
+- **Interactive Features**: Password toggle and clear button with proper accessibility
+- **Validation Integration**: Built-in error states with visual feedback and ARIA attributes
+
+#### 3. **DataTable Component Strategy**
+- **Generic Type System**: Fully typed with TypeScript generics for type-safe data handling
+- **Column Configuration**: Flexible column definition with custom rendering capabilities
+- **Selection System**: Both single and multiple selection modes with proper state management
+- **Sorting Implementation**: Client-side sorting with visual indicators
+- **Pagination**: Built-in pagination with customizable page sizes
+
+#### 4. **Technical Implementation Details**
+
+**Build System & Tooling:**
+- **Vite**: Fast development server and optimized builds
+- **TypeScript**: Strict configuration with proper module resolution
+- **TailwindCSS**: Custom design tokens and component layer organization
+- **Storybook**: Component documentation with interactive examples
+
+**Testing Strategy:**
+- **Unit Tests**: Comprehensive test coverage for all component features
+- **Integration Tests**: Testing component interactions and state changes
+- **Accessibility Tests**: Ensuring ARIA compliance and keyboard navigation
+
+**Code Organization:**
+```
+src/
+├── components/          # Main component files
+│   ├── InputField.tsx
+│   ├── DataTable.tsx
+│   └── __tests__/      # Component tests
+├── index.ts            # Library exports
+├── index.css           # Global styles
+└── App.tsx             # Demo application
+```
+
+#### 5. **Scalability Considerations**
+- **Modular Architecture**: Components are self-contained and reusable
+- **Extensible Design**: Easy to add new variants, sizes, and features
+- **Performance Optimization**: Efficient rendering with React.memo and proper key usage
+- **Bundle Size**: Tree-shaking friendly exports and minimal dependencies
+
+#### 6. **Developer Experience**
+- **Comprehensive Documentation**: Detailed prop tables and usage examples
+- **Interactive Examples**: Storybook stories for all component states
+- **Type Safety**: Full TypeScript support with proper type definitions
+- **Hot Reload**: Fast development cycle with Vite
+
+#### 7. **Quality Assurance**
+- **Linting**: ESLint configuration for code quality
+- **Type Checking**: Strict TypeScript compilation
+- **Testing**: Automated tests for all component features
+- **Storybook**: Visual testing and documentation platform
+
 ## 📦 Installation
 
 ```bash
@@ -242,47 +309,6 @@ npm install --save-dev chromatic
 npx chromatic --project-token=<your-token>
 ```
 
-## 📁 Project Structure
-
-```
-src/
-├── components/
-│   ├── InputField.tsx
-│   ├── InputField.stories.tsx
-│   ├── DataTable.tsx
-│   ├── DataTable.stories.tsx
-│   └── __tests__/
-│       ├── InputField.test.tsx
-│       └── DataTable.test.tsx
-├── test/
-│   └── setup.ts
-├── App.tsx
-├── main.tsx
-├── index.css
-└── index.ts
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [React](https://reactjs.org/) - A JavaScript library for building user interfaces
-- [TypeScript](https://www.typescriptlang.org/) - Typed JavaScript
-- [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Storybook](https://storybook.js.org/) - Component development environment
-- [Lucide](https://lucide.dev/) - Beautiful & consistent icon toolkit
-- [Vitest](https://vitest.dev/) - Fast unit test framework
-
-## 📞 Support
-
-If you have any questions or need help, please open an issue on GitHub or contact the maintainers.
